@@ -452,6 +452,16 @@
     .btn:hover {
       background-color: #2c4e76;
     }
+
+    #dynamicSubmoduleContent {
+    width: 100%;
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
   </style>
 </head>
 <body>
@@ -500,6 +510,7 @@
 
         <!-- ROLE CONTENT CONTAINER -->
         <div id="roleContentContainer">
+            <div id="dynamicSubmoduleContent"></div>
           <!-- HR1 CONTENT -->
           <div id="contentHR1" class="role-content hidden">
             <div class="stats-grid">
@@ -648,6 +659,36 @@
     parent.classList.toggle('open');
   };
 
+  // --- ADD THE FETCH LOGIC HERE ---
+window.loadSubmodule = function(subName, element) {
+    // 1. Manage Active State
+    document.querySelectorAll('.sidebar-link, .submenu-link').forEach(link => link.classList.remove('active'));
+    element.classList.add('active');
+
+    // 2. Hide all main dashboard content containers
+    document.querySelectorAll('.role-content').forEach(el => el.classList.add('hidden'));
+    
+    // 3. Convert name to filename (e.g., "Applicant List" -> "applicantlist.html")
+    const fileName = subName.toLowerCase().replace(/\s+/g, '') + '.html';
+
+    // 4. Fetch and Load the Page
+    fetch(fileName)
+        .then(response => {
+            if (!response.ok) throw new Error('Page not found');
+            return response.text();
+        })
+        .then(html => {
+            const displayArea = document.getElementById('dynamicSubmoduleContent');
+            displayArea.innerHTML = html;
+            document.getElementById('dashboardTitle').innerText = subName;
+        })
+        .catch(error => {
+            console.error('Error loading page:', error);
+            document.getElementById('dynamicSubmoduleContent').innerHTML = 
+                `<div class="stat-card"><h3>Error</h3><p>Could not load ${fileName}. Make sure the file exists.</p></div>`;
+        });
+};
+
   // Render sidebar
   function renderSidebar(role) {
     const roleNameSpan = document.getElementById('roleNameSpan');
@@ -701,7 +742,7 @@
               <ul class="sidebar-submenu">
                 ${subItems.map(sub => `
                   <li>
-                    <a href="#" class="submenu-link" onclick="setActive(this); return false;">
+                    <a href="#" class="submenu-link" onclick="loadSubmodule('${sub}', this); return false;">
                       ${sub}
                     </a>
                   </li>`).join('')}
@@ -725,6 +766,13 @@
 
   // Show role content
   function showRoleContent(role) {
+
+    document.getElementById('dynamicSubmoduleContent').innerHTML = '';
+
+    document.querySelectorAll('.role-content').forEach(el => {
+      el.classList.add('hidden');
+    });
+
     document.querySelectorAll('.role-content').forEach(el => {
       el.classList.add('hidden');
     });
