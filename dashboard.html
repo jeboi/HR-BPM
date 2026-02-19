@@ -35,18 +35,75 @@
 
     /* ------ SIDEBAR – FIXED, NO SCROLL ISSUES ------ */
     /* ------ SIDEBAR CONTAINER ------ */
+
+    /* Mini Sidebar Styling */
+/* Mini Sidebar Styling */
+.mini-sidebar {
+  width: 70px;
+  background-color: #f4f6fb; 
+  border-right: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 20px;
+  gap: 15px;
+  flex-shrink: 0;
+}
+
+/* 1. Base State: White Background, Blue Icon */
+.mini-item {
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 12px;
+  background-color: white; 
+  color: #5d87ff;              /* Blue icon */
+  cursor: pointer;
+  transition: all 0.25s ease;  /* Faster transition for better feel */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2e8f0;   
+}
+
+/* 2. HOVER EFFECT: Switches to Blue Background / White Icon */
+.mini-item:hover {
+  background-color: #5d87ff !important; /* Forces the switch to blue */
+  color: white !important;                /* Forces icon to white */
+  transform: translateY(-2px); 
+  border-color: #5d87ff;
+}
+
+/* 3. ACTIVE STATE: Stays White with a Blue Border (to distinguish from hover) */
+.mini-item.active {
+  background-color: white; 
+  color: #5d87ff;
+  border: 0px solid #5d87ff; /* Thick blue border shows it's selected */
+  box-shadow: inset 0 0 0 1px #5d87ff; /* Sharp inner definition */
+}
+
+/* Collapsed State for the Main Sidebar */
+.hr-sidebar.collapsed {
+  width: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  overflow: hidden;
+  border: none;
+}
+
 .hr-sidebar {
   width: 280px;
   height: 100vh;
-  background: white; /* Dark Navy from your code */
+  background: white;
   color: black;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
   position: relative;
-  transition: .2s ease-in;
+  transition: width .2s ease-in; /* Ensure width is what transitions */
   z-index: 11;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  border-right: 1px solid #e2e8f0;
+  overflow-x: hidden; /* Add this to prevent content spill during toggle */
 }
 
 /* ------ HEADER & LOGO ------ */
@@ -466,12 +523,15 @@
 </head>
 <body>
   <div class="dashboard-wrapper">
-    <!-- SIDEBAR -->
-    <div class="hr-sidebar" id="hrSidebar">
+    <div class="mini-sidebar">
+      <div class="mini-item active" onclick="toggleMainSidebar(this)">
+        <i><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg></i>
+      </div>
+    </div> <div class="hr-sidebar" id="hrSidebar">
       <div class="sidebar-header">
         <div class="brand-logo">
           <a href="#" class="text-nowrap logo-img">
-            <img src="C:\Users\John Emmanuel\HR_DEPT\SEODash-1.0.0\src\assets\images\logos\logo-light.svg" alt="Seodash" />
+            <img src="logo-light.svg" alt="Seodash" />
           </a>
         </div>
         <div class="role-tag" id="sidebarRoleTag">
@@ -479,11 +539,9 @@
         </div>
       </div>
       <div class="sidebar-nav">
-      <ul class="sidebar-menu" id="sidebarMenuList">
-        <!-- Dynamic menu injected via JS -->
-      </ul>
+        <ul class="sidebar-menu" id="sidebarMenuList">
+          </ul>
       </div>
-      <!-- SIDEBAR FOOTER WITH LOGOUT BUTTON -->
       <div class="sidebar-footer">
         <div class="logout-btn" id="logoutButton">
           <i>🚪</i> 
@@ -492,6 +550,36 @@
         </div>
       </div>
     </div>
+
+    <div class="main-panel">
+      <div class="main-content" id="mainContent">
+        <div class="top-bar">
+          <div class="welcome-area">
+            <h1 id="dashboardTitle">Dashboard</h1>
+            <div class="badge-role" id="roleSubtitle"></div>
+          </div>
+          <div class="employee-badge">
+            <span id="employeeIdDisplay" style="font-weight: 500; color:#1f4a6e;">👤 </span>
+            <div class="avatar" id="userAvatar">HR</div>
+          </div>
+        </div>
+
+        <div id="roleContentContainer">
+            <div id="dynamicSubmoduleContent" class="hidden"></div>
+          
+          <div id="contentHR1" class="role-content hidden">...</div>
+          <div id="contentHR2" class="role-content hidden">...</div>
+          <div id="contentHR3" class="role-content hidden">...</div>
+          <div id="contentHR4" class="role-content hidden">...</div>
+          <div id="contentFallback" class="role-content hidden">...</div>
+        </div>
+        
+        <div class="footer-meta">
+          ⚕️ Hospital HRMS · Role-based access · modules aligned with master table
+        </div>
+      </div>
+    </div>
+  </div>
   
 
     <!-- MAIN PANEL -->
@@ -510,7 +598,7 @@
 
         <!-- ROLE CONTENT CONTAINER -->
         <div id="roleContentContainer">
-            <div id="dynamicSubmoduleContent"></div>
+            <div id="dynamicSubmoduleContent" class="hidden"></div>
           <!-- HR1 CONTENT -->
           <div id="contentHR1" class="role-content hidden">
             <div class="stats-grid">
@@ -597,15 +685,14 @@
   </div>
 
   <script>
-    (function() {
+(function() {
   "use strict";
 
-  // ---------- RETRIEVE SESSION FROM LOGIN ----------
+  // --- 1. DATA & SESSION ---
   let currentRole = sessionStorage.getItem('userRole');
   let employeeId = sessionStorage.getItem('employeeId');
   let isLogged = sessionStorage.getItem('isLoggedIn');
 
-  // Role mapping
   const roleMap = {
     'hr1': { name: 'HR1 · Talent Acquisition', desc: 'Applicant Management, Recruitment, Onboarding' },
     'hr2': { name: 'HR2 · Talent Development', desc: 'Training, Learning, Succession Planning' },
@@ -613,7 +700,6 @@
     'hr4': { name: 'HR4 · Compensation & Analytics', desc: 'Payroll, Benefits, HR Analytics' }
   };
 
-  // --- NEW DROPDOWN DATA MAP ---
   const subMenuMap = {
     'Applicant Management': ['Applicant List', 'Application Tracking', 'Interview Scheduling', 'Applicant Status Monitoring'],
     'Recruitment Management': ['Job Posting Management', 'Vacancy Requests', 'Candidate Shortlisting', 'Hiring Approval'],
@@ -637,226 +723,153 @@
     'HMO & Benefits Administration': ['HMO Enrollment', 'Benefits Management', 'Benefits Claims', 'Benefits Reports']
   };
 
-  // Sidebar menu by role
   const menuByRole = {
-    hr1: [
-      { category: 'APPLICANT MANAGEMENT', items: ['Applicant Management', 'Recruitment Management', 'New Hire Onboarding', 'Performance Management (Initial)', 'Social Recognition'] }
-    ],
-    hr2: [
-      { category: 'TALENT DEVELOPMENT', items: ['Competency Management', 'Learning Management', 'Training Management', 'Succession Planning', 'Employee Self-Service (ESS)'] }
-    ],
-    hr3: [
-      { category: 'WORKFORCE OPERATIONS', items: ['Time and Attendance System', 'Shift and Schedule Management', 'Timesheet Management', 'Leave Management', 'Claims and Reimbursement'] }
-    ],
-    hr4: [
-      { category: 'COMPENSATION & HR INTELLIGENCE', items: ['Core Human Capital Management (HCM)', 'Payroll Management', 'Compensation Planning', 'HR Analytics Dashboard', 'HMO & Benefits Administration'] }
-    ]
+    hr1: [{ category: 'APPLICANT MANAGEMENT', items: ['Applicant Management', 'Recruitment Management', 'New Hire Onboarding', 'Performance Management (Initial)', 'Social Recognition'] }],
+    hr2: [{ category: 'TALENT DEVELOPMENT', items: ['Competency Management', 'Learning Management', 'Training Management', 'Succession Planning', 'Employee Self-Service (ESS)'] }],
+    hr3: [{ category: 'WORKFORCE OPERATIONS', items: ['Time and Attendance System', 'Shift and Schedule Management', 'Timesheet Management', 'Leave Management', 'Claims and Reimbursement'] }],
+    hr4: [{ category: 'COMPENSATION & HR INTELLIGENCE', items: ['Core Human Capital Management (HCM)', 'Payroll Management', 'Compensation Planning', 'HR Analytics Dashboard', 'HMO & Benefits Administration'] }]
   };
 
-  // --- HELPER: TOGGLE DROPDOWN ---
+  // --- 2. UI FUNCTIONS ---
+  window.toggleMainSidebar = function(element) {
+    const sidebar = document.getElementById('hrSidebar');
+    if (sidebar) sidebar.classList.toggle('collapsed');
+    document.querySelectorAll('.mini-item').forEach(i => i.classList.remove('active'));
+    if (element) element.classList.add('active');
+  };
+
   window.toggleDropdown = function(element) {
-    const parent = element.parentElement;
-    parent.classList.toggle('open');
+    element.parentElement.classList.toggle('open');
   };
 
-  // --- ADD THE FETCH LOGIC HERE ---
-window.loadSubmodule = function(subName, element) {
-    // 1. Manage Active State
+  window.setActive = function(element) {
     document.querySelectorAll('.sidebar-link, .submenu-link').forEach(link => link.classList.remove('active'));
-    element.classList.add('active');
+    if (element) element.classList.add('active');
+  };
 
-    // 2. Hide all main dashboard content containers
+  // --- 3. CORE LOGIC ---
+  window.loadSubmodule = function(subName, element) {
+    window.setActive(element);
+    
+    // Hide all role-specific dashboard containers
     document.querySelectorAll('.role-content').forEach(el => el.classList.add('hidden'));
     
-    // 3. Convert name to filename (e.g., "Applicant List" -> "applicantlist.html")
-    const fileName = subName.toLowerCase().replace(/\s+/g, '') + '.html';
+    // Show and fill the dynamic submodule container
+    const dynamicContainer = document.getElementById('dynamicSubmoduleContent');
+    if (dynamicContainer) {
+        dynamicContainer.classList.remove('hidden');
+        dynamicContainer.innerHTML = `<div style="padding: 20px;">Loading ${subName}...</div>`;
 
-    // 4. Fetch and Load the Page
-    fetch(fileName)
-        .then(response => {
-            if (!response.ok) throw new Error('Page not found');
-            return response.text();
-        })
-        .then(html => {
-            const displayArea = document.getElementById('dynamicSubmoduleContent');
-            displayArea.innerHTML = html;
+        const fileName = subName.toLowerCase().replace(/\s+/g, '') + '.html';
+        fetch(fileName)
+          .then(res => res.ok ? res.text() : Promise.reject())
+          .then(html => {
+            dynamicContainer.innerHTML = html;
             document.getElementById('dashboardTitle').innerText = subName;
-        })
-        .catch(error => {
-            console.error('Error loading page:', error);
-            document.getElementById('dynamicSubmoduleContent').innerHTML = 
-                `<div class="stat-card"><h3>Error</h3><p>Could not load ${fileName}. Make sure the file exists.</p></div>`;
-        });
-};
+          })
+          .catch(() => {
+            dynamicContainer.innerHTML = `<div class="stat-card"><h3>Error</h3><p>Could not load ${fileName}.</p></div>`;
+          });
+    }
+  };
 
-  // Render sidebar
   function renderSidebar(role) {
-    const roleNameSpan = document.getElementById('roleNameSpan');
     const menuListEl = document.getElementById('sidebarMenuList');
-    const logoutRoleHint = document.getElementById('logoutRoleHint');
+    if (!role || !menuListEl) return;
+    
+    document.getElementById('roleNameSpan').innerText = roleMap[role].name;
+    const hint = document.getElementById('logoutRoleHint');
+    if (hint) hint.innerText = role.toUpperCase();
 
-    if (!role || !roleMap[role]) return;
-
-    roleNameSpan.innerText = roleMap[role].name;
-    if (logoutRoleHint) logoutRoleHint.innerText = role.toUpperCase();
-
-    const iconMap = {
-      'Applicant Management': '👥', 'Recruitment Management': '🔍', 'New Hire Onboarding': '🚀',
-      'Performance Management (Initial)': '📈', 'Social Recognition': '🏅', 'Competency Management': '📊',
-      'Training Management': '🎓', 'Learning Management': '📖', 'Succession Planning': '🧭',
-      'Employee Self-Service (ESS)': '👤', 'Time and Attendance System': '🕒', 'Shift and Schedule Management': '📅',
-      'Timesheet Management': '📝', 'Leave Management': '🏖️', 'Claims and Reimbursement': '💰',
-      'Core Human Capital Management (HCM)': '🧾', 'Payroll Management': '💵', 'Compensation Planning': '💹',
-      'HR Analytics Dashboard': '📉', 'HMO & Benefits Administration': '🏥'
-    };
-
-    let html = '';
-
-    // --- HOME SECTION ---
-    html += `<li class="nav-small-cap"><span>HOME</span></li>`;
-    html += `
+    let html = `<li class="nav-small-cap"><span>HOME</span></li>
       <li class="sidebar-item">
         <a href="#" class="sidebar-link active" onclick="setActive(this); showRoleContent('${role}'); return false;">
-          <span>🏠</span>
-          <span class="hide-menu">Dashboard</span>
+          <span>🏠</span> <span class="hide-menu">Dashboard</span>
         </a>
       </li>`;
 
-    // --- ROLE CATEGORIES ---
-    const sections = menuByRole[role] || [];
-    sections.forEach(section => {
+    (menuByRole[role] || []).forEach(section => {
       html += `<li class="nav-small-cap"><span>${section.category}</span></li>`;
       section.items.forEach(item => {
-        const icon = iconMap[item] || '📄';
         const subItems = subMenuMap[item];
-
-          if (subItems) {
-          // RENDER DROPDOWN ITEM
-          html += `
-            <li class="sidebar-item">
-              <a href="#" class="sidebar-link" onclick="toggleDropdown(this); return false;">
-                <span>${icon}</span>
-                <span class="hide-menu">${item}</span>
-                <span class="chevron">▶</span>
-              </a>
-              <ul class="sidebar-submenu">
-                ${subItems.map(sub => `
-                  <li>
-                    <a href="#" class="submenu-link" onclick="loadSubmodule('${sub}', this); return false;">
-                      ${sub}
-                    </a>
-                  </li>`).join('')}
-              </ul>
-            </li>`;
-        } else {
-          // RENDER STANDARD ITEM
-          html += `
-            <li class="sidebar-item">
-              <a href="#" class="sidebar-link" onclick="setActive(this); return false;">
-                <span>${icon}</span>
-                <span class="hide-menu">${item}</span>
-              </a>
-            </li>`;
+        if (subItems) {
+          html += `<li class="sidebar-item">
+            <a href="#" class="sidebar-link" onclick="toggleDropdown(this); return false;">
+              <span>📄</span> <span class="hide-menu">${item}</span> <span class="chevron">▶</span>
+            </a>
+            <ul class="sidebar-submenu">
+              ${subItems.map(sub => `<li><a href="#" class="submenu-link" onclick="loadSubmodule('${sub}', this); return false;">${sub}</a></li>`).join('')}
+            </ul>
+          </li>`;
         }
       });
     });
-
     menuListEl.innerHTML = html;
   }
 
-  // Show role content
-  function showRoleContent(role) {
-
-    document.getElementById('dynamicSubmoduleContent').innerHTML = '';
-
-    document.querySelectorAll('.role-content').forEach(el => {
-      el.classList.add('hidden');
-    });
-
-    document.querySelectorAll('.role-content').forEach(el => {
-      el.classList.add('hidden');
-    });
-
-    let contentId = '';
-    if (role === 'hr1') contentId = 'contentHR1';
-    else if (role === 'hr2') contentId = 'contentHR2';
-    else if (role === 'hr3') contentId = 'contentHR3';
-    else if (role === 'hr4') contentId = 'contentHR4';
-    else contentId = 'contentFallback';
-
-    const activeContent = document.getElementById(contentId);
-    if (activeContent) {
-      activeContent.classList.remove('hidden');
+  window.showRoleContent = function(role) {
+    // 1. Explicitly HIDE and CLEAR the submodule container
+    const dynamicContainer = document.getElementById('dynamicSubmoduleContent');
+    if (dynamicContainer) {
+        dynamicContainer.innerHTML = "";
+        dynamicContainer.classList.add('hidden');
     }
 
-    const titleEl = document.getElementById('dashboardTitle');
-    const subEl = document.getElementById('roleSubtitle');
-    if (roleMap[role]) {
-      titleEl.innerText = roleMap[role].name.split('·')[1] || 'Dashboard';
-      subEl.innerText = roleMap[role].desc || '';
-    } else {
-      titleEl.innerText = 'HR Dashboard';
-      subEl.innerText = 'Please log in';
-    }
-
-    document.getElementById('employeeIdDisplay').innerHTML = `👤 ${employeeId || 'Not logged in'}`;
-    const avatar = document.getElementById('userAvatar');
-    if (avatar) {
-      if (role) {
-        let roleNum = role.replace('hr', '');
-        avatar.innerText = `HR${roleNum}`;
-      } else {
-        avatar.innerText = 'HR';
-      }
-    }
-  }
-
-  // ---------- LOGOUT FUNCTION ----------
-  window.logout = function() {
-    sessionStorage.removeItem('userRole');
-    sessionStorage.removeItem('employeeId');
-    sessionStorage.removeItem('isLoggedIn');
-    sessionStorage.removeItem('employeeName');
-    window.location.href = 'login.html';
-  };
-
-  window.redirectToLogin = function() {
-    window.location.href = 'login.html';
-  };
-
-  // Initialize dashboard
-  if (!currentRole || !isLogged) {
+    // 2. Hide all main role content containers
     document.querySelectorAll('.role-content').forEach(el => el.classList.add('hidden'));
-    document.getElementById('contentFallback').classList.remove('hidden');
-    document.getElementById('dashboardTitle').innerText = 'Access Denied';
-    document.getElementById('roleSubtitle').innerText = 'Please login first';
-    document.getElementById('employeeIdDisplay').innerHTML = '👤 Not logged in';
-    document.getElementById('roleNameSpan').innerText = 'Not logged in';
-    document.getElementById('logoutRoleHint').innerText = '';
+
+    // 3. Show the requested Role Dashboard (Landing Page)
+    const activeContent = document.getElementById('content' + role.toUpperCase());
+    if (activeContent) {
+        activeContent.classList.remove('hidden');
+        
+        // Load external HTML if content is missing
+        if (activeContent.innerHTML.trim() === "" || activeContent.innerHTML.trim() === "...") {
+            const dashFile = 'dashboard' + role.toLowerCase() + '.html';
+            fetch(dashFile)
+                .then(res => res.ok ? res.text() : Promise.reject())
+                .then(html => { activeContent.innerHTML = html; })
+                .catch(() => { activeContent.innerHTML = "Error loading " + dashFile; });
+        }
+    }
+
+    // 4. Update Header Titles
+    if (roleMap[role]) {
+        document.getElementById('dashboardTitle').innerText = roleMap[role].name.split('·')[1].trim();
+        document.getElementById('roleSubtitle').innerText = roleMap[role].desc;
+    }
+
+    // 5. Update Profile UI
+    const idDisp = document.getElementById('employeeIdDisplay');
+    if (idDisp) idDisp.innerHTML = `👤 ${employeeId || 'Not logged in'}`;
+    const avatar = document.getElementById('userAvatar');
+    if (avatar) avatar.innerText = role ? `HR${role.replace('hr', '')}` : 'HR';
+  };
+
+  // --- 4. STARTUP ---
+  if (!currentRole || !isLogged) {
+    if (document.getElementById('dashboardTitle')) {
+      document.getElementById('dashboardTitle').innerText = 'Access Denied';
+    }
   } else {
     renderSidebar(currentRole);
+    // Use window.onload to ensure DOM elements are ready
+    window.addEventListener('load', () => showRoleContent(currentRole));
+    // Trigger immediately just in case
     showRoleContent(currentRole);
   }
 
-  // Attach logout event listener
-  const logoutBtn = document.getElementById('logoutButton');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', function(e) {
+  const mainLogoutBtn = document.getElementById('logoutButton');
+  if (mainLogoutBtn) {
+    mainLogoutBtn.onclick = function(e) {
       e.preventDefault();
-      const confirmLogout = confirm("Are you sure you want to log out?");
-      if (confirmLogout) {
+      if (confirm("Are you sure?")) {
         sessionStorage.clear();
         window.location.href = 'login.html';
       }
-    });
+    };
   }
-
-  // Helper function to move highlight
-  window.setActive = function(element) {
-    document.querySelectorAll('.sidebar-link, .submenu-link').forEach(link => link.classList.remove('active'));
-    element.classList.add('active');
-  };
 })();
-  </script>
+</script>
 </body>
 </html>
