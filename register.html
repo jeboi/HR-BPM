@@ -1,183 +1,241 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Hospital HR | Create Account</title>
+  <title>SeoDash - Create Account</title>
   <link rel="shortcut icon" type="image/png" href="../assets/images/logos/seodashlogo.png" />
+  <link rel="stylesheet" href="login.css" />
   <style>
-    :root {
-      --primary: #5d87ff;
-      --secondary: #4570e6;
-      --bg: #f4f6fb;
-    }
-
-    body, html {
-      margin: 0;
-      padding: 0;
-      height: 100%;
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(135deg, #f4f6fb 0%, #eef2ff 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* GLASSMORPHISM CARD */
-    .register-container {
-      background: rgba(255, 255, 255, 0.8);
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
-      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.05);
-      border-radius: 24px;
-      width: 100%;
-      max-width: 500px;
-      padding: 40px;
-      margin: 20px;
-      text-align: center;
-      animation: slideUp 0.6s ease-out;
-    }
-
-    @keyframes slideUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .brand-logo {
+    .role-selection {
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 15px;
       margin-bottom: 20px;
-      font-weight: 800;
-      font-size: 1.5rem;
-      color: var(--primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
+      position: relative;
+      z-index: 10;
+      overflow: visible;
     }
-
-    .form-group {
-      text-align: left;
-      margin-bottom: 15px;
-    }
-
-    .form-group label {
-      display: block;
-      font-size: 0.8rem;
+    .role-title {
       font-weight: 600;
-      color: #5a6a85;
-      margin-bottom: 6px;
+      margin-bottom: 10px;
+      color: #2BA3D8;
     }
-
-    .form-input {
+    .role-select-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 100%;
+    }
+    .role-select-wrapper::after {
+      content: '';
+      position: absolute;
+      right: 14px;
+      top: 17px;
+      width: 0;
+      height: 0;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 6px solid #2BA3D8;
+      pointer-events: none;
+      z-index: 100;
+    }
+    .role-select {
       width: 100%;
       padding: 12px 16px;
-      border-radius: 12px;
-      border: 1px solid #dfe5ef;
-      background: white;
-      font-size: 0.9rem;
-      transition: all 0.3s ease;
-      box-sizing: border-box;
+      padding-right: 40px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #2c3e50;
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      transition: border-color 0.15s ease-in-out;
+      appearance: none;
+      background-image: none;
+      position: relative;
+      z-index: 2;
     }
-
-    .form-input:focus {
-      outline: none;
-      border-color: var(--primary);
-      box-shadow: 0 0 0 4px rgba(93, 135, 255, 0.1);
+    .role-select:focus {
+      border-color: #2BA3D8;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(43, 163, 216, 0.25);
     }
-
-    .btn-register {
+    .form-group {
+      margin-bottom: 20px;
+    }
+    .form-control {
+      display: block;
       width: 100%;
-      padding: 14px;
-      background: var(--primary);
-      color: white;
-      border: none;
-      border-radius: 12px;
-      font-weight: 700;
-      font-size: 1rem;
-      cursor: pointer;
-      margin-top: 15px;
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.5;
+      color: #2c3e50;
+      background-color: #fff;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      transition: border-color 0.15s ease-in-out;
     }
-
-    .btn-register:hover {
-      background: var(--secondary);
+    .form-control:focus {
+      border-color: #2BA3D8;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(43, 163, 216, 0.25);
     }
-
-    .footer-links {
-      margin-top: 20px;
-      font-size: 0.85rem;
-      color: #7c8fac;
+    label {
+      font-weight: 500;
+      margin-bottom: 6px;
+      display: block;
+      color: #2BA3D8;
     }
-
-    .footer-links a {
-      color: var(--primary);
-      text-decoration: none;
+    .logo-img {
+      margin-bottom: 8px;
+    }
+    .logo-img img {
+      max-width: 160px;
+    }
+    .system-title {
+      text-align: center;
+      color: #2BA3D8;
       font-weight: 600;
+      font-size: 1.2rem;
+      margin-bottom: 24px;
+      letter-spacing: -0.3px;
+    }
+    .btn-signup {
+      background-color: #2BA3D8 !important;
+      border-color: #2BA3D8 !important;
+      color: white !important;
+      padding: 12px !important;
+      border-radius: 8px !important;
+      font-weight: 600 !important;
+      width: 100%;
+      border: none !important;
+      font-size: 16px;
+      transition: background-color 0.2s;
+      cursor: pointer;
+    }
+    .btn-signup:hover {
+      background-color: #1FA8CD !important;
+      border-color: #1FA8CD !important;
+      color: white !important;
+    }
+    .btn-signup:focus {
+      color: white !important;
+      background-color: #2BA3D8 !important;
+    }
+    .card {
+      border-radius: 16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+      border: 1px solid #f0f0f0;
+    }
+    .card-body {
+      padding: 32px;
+    }
+    .text-primary {
+      color: #2BA3D8 !important;
     }
   </style>
 </head>
+
 <body>
+  <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
+    data-sidebar-position="fixed" data-header-position="fixed">
+    <div
+      class="position-relative overflow-hidden radial-gradient min-vh-100 d-flex align-items-center justify-content-center">
+      <div class="d-flex align-items-center justify-content-center w-100">
+        <div class="row justify-content-center w-100">
+          <div class="col-md-8 col-lg-6 col-xxl-4">
+            <div class="card mb-0">
+              <div class="card-body">
+                <div class="text-center d-block py-2 w-100 logo-img">
+                  <img src="https://img.icons8.com/?size=100&id=mYBvS970TJoA&format=png&color=2BA3D8" alt="Hospital" style="width: 72px; height: 72px;">
+                </div>
 
-  <div class="register-container">
-    <div class="brand-logo">
-      <span>🏥</span> Hospital HR
-    </div>
-    <h2 style="margin-bottom: 8px; color: #2a3547;">Create Account</h2>
-    <p style="color: #7c8fac; font-size: 0.85rem; margin-bottom: 25px;">Join the Hospital Management System</p>
+                <div class="system-title">
+                  Hospital HR Management System
+                </div>
 
-    <form id="registerForm">
-      <div class="form-group">
-        <label>Full Name</label>
-        <input type="text" id="fullName" class="form-input" placeholder="Enter your full name" required>
+                <form id="registerForm">
+                  <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" class="form-control" id="fullName" placeholder="Enter your full name" required>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="employeeId">Employee ID</label>
+                    <input type="text" class="form-control" id="employeeId" placeholder="Enter your employee ID" required>
+                  </div>
+
+                  <div class="role-selection">
+                    <div class="role-title">Select Your HR Role:</div>
+                    <div class="role-select-wrapper">
+                      <select id="hrRoleSelect" class="role-select" required>
+                        <option value="" selected disabled>Select a role</option>
+                        <option value="hr1">HR1 - Talent Acquisition (Applicant Management, Recruitment, Onboarding)</option>
+                        <option value="hr2">HR2 - Talent Development (Training, Learning, Succession Planning)</option>
+                        <option value="hr3">HR3 - Workforce Operations (Attendance, Shift, Leave Management)</option>
+                        <option value="hr4">HR4 - Compensation & Analytics (Payroll, Benefits, HR Analytics)</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" class="form-control" id="password" placeholder="Create a password" required>
+                  </div>
+
+                  <button type="submit" class="btn-signup" style="color: white !important; background-color: #2BA3D8 !important;">
+                    Create Account
+                  </button>
+
+                  <div class="d-flex align-items-center justify-content-center mt-4">
+                    <p class="mb-0" style="font-size: 14px; color: #5f6b7a;">Already have an account?</p>
+                    <a class="text-primary fw-bold ms-2" href="login.html" style="font-size: 14px; text-decoration: none; color: #2BA3D8 !important;">Sign In</a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-
-      <div class="form-group">
-        <label>Employee ID</label>
-        <input type="text" id="employeeId" class="form-input" placeholder="e.g. EMP-2024-XXX" required>
-      </div>
-
-      <div class="form-group">
-        <label>Department Role</label>
-        <select class="form-input" id="roleSelect" required style="appearance: none; background-image: url('data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%235a6a85\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'%3e%3c/polyline%3e%3c/svg%3e'); background-repeat: no-repeat; background-position: right 1rem center; background-size: 1em;">
-          <option value="" disabled selected>Select your HR unit</option>
-          <option value="HR1">HR1 - Recruitment</option>
-          <option value="HR2">HR2 - Learning</option>
-          <option value="HR3">HR3 - Workforce</option>
-          <option value="HR4">HR4 - Intelligence</option>
-        </select>
-      </div>
-
-      <div class="form-group">
-        <label>Password</label>
-        <input type="password" id="password" class="form-input" placeholder="••••••••" required>
-      </div>
-
-      <button type="submit" class="btn-register">Sign Up</button>
-    </form>
-
-    <div class="footer-links">
-      Already have an account? <a href="login.html">Sign In</a>
     </div>
   </div>
 
   <script>
     document.getElementById('registerForm').addEventListener('submit', function(e) {
       e.preventDefault();
-      
-      const role = document.getElementById('roleSelect').value;
-      const id = document.getElementById('employeeId').value;
+
+      const selectedRole = document.getElementById('hrRoleSelect').value;
+      const employeeId = document.getElementById('employeeId').value;
       const name = document.getElementById('fullName').value;
 
-      // Logic matches our new single-dashboard system
-      sessionStorage.setItem('userRole', role);
-      sessionStorage.setItem('employeeId', id);
+      if (!selectedRole) {
+        alert('Please select your HR role to continue');
+        return;
+      }
+
+      if (!employeeId) {
+        alert('Please enter your Employee ID');
+        return;
+      }
+
+      if (!name) {
+        alert('Please enter your Full Name');
+        return;
+      }
+
+      sessionStorage.setItem('userRole', selectedRole);
+      sessionStorage.setItem('employeeId', employeeId);
       sessionStorage.setItem('employeeName', name);
       sessionStorage.setItem('isLoggedIn', 'true');
 
       alert('Registration Successful! Welcome to the team.');
-      
-      // Always redirect to the main dashboard
       window.location.href = 'dashboard.html';
     });
   </script>
+
+  <script src="../assets/libs/jquery/dist/jquery.min.js"></script>
+  <script src="../assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
 </body>
 </html>
